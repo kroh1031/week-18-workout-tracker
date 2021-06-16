@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const { Workout } = require("../../models");
 
-// All routes starting with /api/workouts
+// All routes prepended with /api/workouts
 // submit a new workout
 router.post("/", async (req, res) => {
   try {
@@ -34,5 +34,14 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-//
+// get data for /range route
+router.get("/range", async (req, res) => {
+  try {
+    const workoutData = await Workout.find({});
+    res.json(workoutData);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+
 module.exports = router;
