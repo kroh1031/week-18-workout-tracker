@@ -6,8 +6,10 @@ const { Workout } = require("../../models");
 router.post("/", async (req, res) => {
   try {
     const newWorkout = await Workout.create(req.body);
+    console.log(newWorkout);
     res.json(newWorkout);
   } catch (err) {
+    console.log(err);
     res.status(500).json(err);
   }
 });
