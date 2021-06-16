@@ -5,7 +5,7 @@ const { Workout } = require("../../models");
 // submit a new workout
 router.post("/", async (req, res) => {
   try {
-    const newWorkout = await Workout.create(req.body);
+    const newWorkout = await Workout.create({});
     console.log(newWorkout);
     res.json(newWorkout);
   } catch (err) {
@@ -17,18 +17,14 @@ router.post("/", async (req, res) => {
 // update a workout
 router.put("/:id", async (req, res) => {
   try {
-    const newWorkout = await Workout.updateOne(
-      { _id: req.params.id },
+    const newWorkout = await Workout.findByIdAndUpdate(
+      req.params.id,
       {
-        $set: {
-          type: req.body.type,
-          name: req.body.name,
-          duration: req.body.duration,
-          weight: req.body.weight,
-          reps: req.body.reps,
-          sets: req.body.sets,
+        $push: {
+          exercises: req.body,
         },
-      }
+      },
+      { new: true, runValidators: true }
     );
     res.json(newWorkout);
   } catch (err) {
@@ -39,9 +35,12 @@ router.put("/:id", async (req, res) => {
 // get data for /range route
 router.get("/range", async (req, res) => {
   try {
-    const workoutData = await Workout.find({});
+    const workoutData = await Workout.aggregate([
+      { $addFields: { totalDuration: { $sum: "$exercises.duration" } } },
+    ]);
     res.json(workoutData);
   } catch (err) {
+    console.error(err);
     res.status(500).json(err);
   }
 });
