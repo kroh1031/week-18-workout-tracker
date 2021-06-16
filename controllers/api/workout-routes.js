@@ -2,6 +2,18 @@ const router = require("express").Router();
 const { Workout } = require("../../models");
 
 // All routes prepended with /api/workouts
+// get route for most recent workout
+router.get("/", async (req, res) => {
+  try {
+    const workoutData = await Workout.aggregate([
+      { $addFields: { totalDuration: { $sum: "$exercises.duration" } } },
+    ]);
+    res.json(workoutData);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+
 // submit a new workout
 router.post("/", async (req, res) => {
   try {
